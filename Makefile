@@ -21,10 +21,10 @@ down:
 
 
 
-php artisan make:model Article -m
-php artisan migrate
-php artisan make:controller ArticleController
-
+#php artisan make:model Article -m
+#php artisan migrate
+#php artisan make:controller ArticleController
+#php artisan storage:link
 
 
 

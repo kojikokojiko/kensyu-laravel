@@ -27,15 +27,40 @@ class ArticleController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'body' => 'required|string|max:5000',
+            'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
         ], [
             'title.required' => 'タイトルは必須です。',
             'title.max' => 'タイトルは255文字以内で入力してください。',
             'body.required' => '本文は必須です。',
             'body.max' => '本文は5000文字以内で入力してください。',
+            'thumbnail.image' => 'サムネイルは画像ファイルである必要があります。',
+            'images.*.image' => '本文中の画像は画像ファイルである必要があります。',
         ]);
 
-        Article::create($request->all());
+
+        $article = Article::create($request->only(['title', 'body']));
+
+        if ($request->hasFile('thumbnail')) {
+            $path = $request->file('thumbnail')->store('public/thumbnails');
+            $article->thumbnail()->create(['url' => str_replace('public/', '', $path)]);
+        }
+
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                $path = $image->store('public/article_images');
+                $article->images()->create(['url' => str_replace('public/', '', $path)]);
+            }
+        }
         return redirect()->route('articles.index')->with('success', 'Article created successfully.');
+//        Article::create($request->all());
+//        return redirect()->route('articles.index')->with('success', 'Article created successfully.');
+    }
+
+    // 記事の詳細表示
+    public function show(Article $article)
+    {
+        return view('articles.show', compact('article'));
     }
 
     // 記事の編集フォーム表示

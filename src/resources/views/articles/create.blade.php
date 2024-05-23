@@ -14,7 +14,7 @@
             </ul>
         </div>
     @endif
-    <form action="{{ route('articles.store') }}" method="POST">
+    <form action="{{ route('articles.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
         <div class="form-group">
             <label for="title">Title:</label>
@@ -28,6 +28,20 @@
             <textarea class="form-control" id="body" name="body" rows="5" ></textarea>
             @if ($errors->has('body'))
                 <span class="text-danger">{{ $errors->first('body') }}</span>
+            @endif
+        </div>
+        <div class="form-group">
+            <label for="thumbnail">Thumbnail:</label>
+            <input type="file" class="form-control-file" id="thumbnail" name="thumbnail">
+            @if ($errors->has('thumbnail'))
+                <span class="text-danger">{{ $errors->first('thumbnail') }}</span>
+            @endif
+        </div>
+        <div class="form-group">
+            <label for="images">Images:</label>
+            <input type="file" class="form-control-file" id="images" name="images[]" multiple>
+            @if ($errors->has('images.*'))
+                <span class="text-danger">{{ $errors->first('images.*') }}</span>
             @endif
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>
