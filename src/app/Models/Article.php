@@ -26,4 +26,9 @@ class Article extends Model
     {
         return $this->hasMany(Image::class, 'article_id');
     }
+
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class, 'article_tag_adding');
+    }
 }

@@ -22,6 +22,18 @@
             </div>
         @endif
 
+        <!-- タグの表示 -->
+        @if ($article->tags)
+            <div class="mt-3">
+                <h5>Categories:</h5>
+                <ul>
+                    @foreach ($article->tags as $tag)
+                        <li>{{ $tag->name }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         <a href="{{ route('articles.index') }}" class="btn btn-primary">Back to Articles</a>
     </div>
 @endsection

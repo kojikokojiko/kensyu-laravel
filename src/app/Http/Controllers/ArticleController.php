@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Article;
+use App\Models\Tag;
 use Illuminate\Http\Request;
 
 class ArticleController extends Controller
@@ -17,7 +18,8 @@ class ArticleController extends Controller
 //     記事作成フォーム表示
     public function create()
     {
-        return view('articles.create');
+        $tags = Tag::all();
+        return view('articles.create', compact('tags'));
     }
 
     // 記事の保存
@@ -28,7 +30,9 @@ class ArticleController extends Controller
             'title' => 'required|string|max:255',
             'body' => 'required|string|max:5000',
             'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
+            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'tags' => 'required|array',
+            'tags.*' => 'exists:tags,id'
         ], [
             'title.required' => 'タイトルは必須です。',
             'title.max' => 'タイトルは255文字以内で入力してください。',
@@ -36,8 +40,9 @@ class ArticleController extends Controller
             'body.max' => '本文は5000文字以内で入力してください。',
             'thumbnail.image' => 'サムネイルは画像ファイルである必要があります。',
             'images.*.image' => '本文中の画像は画像ファイルである必要があります。',
+            'tags.required' => '少なくとも1つのタグを選択してください。',
+            'tags.*.exists' => '選択されたタグは無効です。',
         ]);
-
 
         $article = Article::create($request->only(['title', 'body']));
 
@@ -52,6 +57,9 @@ class ArticleController extends Controller
                 $article->images()->create(['url' => str_replace('public/', '', $path)]);
             }
         }
+
+        $article->tags()->sync($request->tags);
+
         return redirect()->route('articles.index')->with('success', 'Article created successfully.');
 //        Article::create($request->all());
 //        return redirect()->route('articles.index')->with('success', 'Article created successfully.');
@@ -60,24 +68,43 @@ class ArticleController extends Controller
     // 記事の詳細表示
     public function show(Article $article)
     {
+        $article->load('tags');
         return view('articles.show', compact('article'));
     }
 
     // 記事の編集フォーム表示
     public function edit(Article $article)
     {
-        return view('articles.edit', compact('article'));
+        $tags = Tag::all();
+        $article->load('tags');
+        return view('articles.edit', compact('article', 'tags'));
     }
 
     // 記事の更新
     public function update(Request $request, Article $article)
     {
+
         $request->validate([
-            'title' => 'required',
-            'body' => 'required',
+            'title' => 'required|string|max:255',
+            'body' => 'required|string|max:5000',
+            'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'tags' => 'required|array',
+            'tags.*' => 'exists:tags,id'
+        ], [
+            'title.required' => 'タイトルは必須です。',
+            'title.max' => 'タイトルは255文字以内で入力してください。',
+            'body.required' => '本文は必須です。',
+            'body.max' => '本文は5000文字以内で入力してください。',
+            'thumbnail.image' => 'サムネイルは画像ファイルである必要があります。',
+            'images.*.image' => '本文中の画像は画像ファイルである必要があります。',
+            'tags.required' => '少なくとも1つのタグを選択してください。',
+            'tags.*.exists' => '選択されたタグは無効です。',
         ]);
 
         $article->update($request->all());
+
+        $article->tags()->sync($request->tags);
         return redirect()->route('articles.index')->with('success', 'Article updated successfully.');
     }
 
