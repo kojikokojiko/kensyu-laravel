@@ -15,7 +15,7 @@ class Article extends Model
      *
      * @var array
      */
-    protected $fillable = ['title', 'body'];
+    protected $fillable = ['title', 'body','user_id'];
 
     public function thumbnail()
     {
@@ -30,5 +30,9 @@ class Article extends Model
     public function tags()
     {
         return $this->belongsToMany(Tag::class, 'article_tag_adding');
+    }
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

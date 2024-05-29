@@ -5,13 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\Article;
 use App\Models\Tag;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ArticleController extends Controller
 {
     // 記事一覧表示
     public function index()
     {
-        $articles = Article::all();
+        $articles = Article::with('user')->get(); // ユーザー情報をロード
         return view('articles.index', compact('articles'));
     }
 
@@ -44,7 +45,11 @@ class ArticleController extends Controller
             'tags.*.exists' => '選択されたタグは無効です。',
         ]);
 
-        $article = Article::create($request->only(['title', 'body']));
+        $article = Article::create(array_merge(
+            $request->only(['title', 'body']),
+            ['user_id' => Auth::id()]
+        ));
+
 
         if ($request->hasFile('thumbnail')) {
             $path = $request->file('thumbnail')->store('public/thumbnails');
@@ -75,6 +80,10 @@ class ArticleController extends Controller
     // 記事の編集フォーム表示
     public function edit(Article $article)
     {
+        if ($article->user_id !== Auth::id()) {
+            return redirect()->route('articles.index')->withErrors('他のユーザーの投稿は、編集、更新、削除できません');
+        }
+
         $tags = Tag::all();
         $article->load('tags');
         return view('articles.edit', compact('article', 'tags'));
@@ -83,6 +92,11 @@ class ArticleController extends Controller
     // 記事の更新
     public function update(Request $request, Article $article)
     {
+
+        if ($article->user_id !== Auth::id()) {
+            return redirect()->route('articles.index')->withErrors('他のユーザーの投稿は、編集、更新、削除できません');
+        }
+
 
         $request->validate([
             'title' => 'required|string|max:255',
@@ -102,7 +116,19 @@ class ArticleController extends Controller
             'tags.*.exists' => '選択されたタグは無効です。',
         ]);
 
-        $article->update($request->all());
+        $article->update($request->only(['title', 'body']));
+
+        if ($request->hasFile('thumbnail')) {
+            $path = $request->file('thumbnail')->store('public/thumbnails');
+            $article->thumbnail()->create(['url' => str_replace('public/', '', $path)]);
+        }
+
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                $path = $image->store('public/article_images');
+                $article->images()->create(['url' => str_replace('public/', '', $path)]);
+            }
+        }
 
         $article->tags()->sync($request->tags);
         return redirect()->route('articles.index')->with('success', 'Article updated successfully.');
@@ -111,6 +137,10 @@ class ArticleController extends Controller
     // 記事の削除
     public function destroy(Article $article)
     {
+        if ($article->user_id !== Auth::id()) {
+            return redirect()->route('articles.index')->withErrors('他のユーザーの投稿は、編集、更新、削除できません');
+        }
+
         $article->delete();
         return redirect()->route('articles.index')->with('success', 'Article deleted successfully.');
     }
