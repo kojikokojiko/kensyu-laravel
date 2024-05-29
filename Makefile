@@ -16,6 +16,8 @@ down:
 	docker-compose down
 
 
+#vendor/bin/phpunit --testdox tests/Feature/UserRegistrationTest.php
+
 
 
 
