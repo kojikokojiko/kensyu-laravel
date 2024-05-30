@@ -84,7 +84,7 @@ class ArticleController extends Controller
     public function edit(Article $article)
     {
         if ($article->user_id !== Auth::id()) {
-            return redirect()->route('articles.index')->withErrors('他のユーザーの投稿は、編集、更新、削除できません');
+            return redirect()->route('home')->withErrors('他のユーザーの投稿は、編集、更新、削除できません');
         }
 
         $tags = Tag::all();
@@ -97,7 +97,7 @@ class ArticleController extends Controller
     {
 
         if ($article->user_id !== Auth::id()) {
-            return redirect()->route('articles.index')->withErrors('他のユーザーの投稿は、編集、更新、削除できません');
+            return redirect()->route('home')->withErrors(['error' => 'You are not authorized to edit this article.']);
         }
 
 
@@ -134,17 +134,17 @@ class ArticleController extends Controller
         }
 
         $article->tags()->sync($request->tags);
-        return redirect()->route('articles.index')->with('success', 'Article updated successfully.');
+        return redirect()->route('home')->with('success', 'Article updated successfully.');
     }
 
     // 記事の削除
     public function destroy(Article $article)
     {
         if ($article->user_id !== Auth::id()) {
-            return redirect()->route('articles.index')->withErrors('他のユーザーの投稿は、編集、更新、削除できません');
+            return redirect()->route('home')->withErrors('他のユーザーの投稿は、編集、更新、削除できません');
         }
 
         $article->delete();
-        return redirect()->route('articles.index')->with('success', 'Article deleted successfully.');
+        return redirect()->route('home')->with('success', 'Article deleted successfully.');
     }
 }

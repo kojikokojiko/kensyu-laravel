@@ -15,7 +15,7 @@ use App\Http\Controllers\ArticleController;
 Route::get('/', [ArticleController::class, 'index'])->name('home');
 // 記事関連のリソースルート
 // 記事関連のリソースルート
-Route::resource('articles', ArticleController::class)->middleware('auth')->except(['index', 'show']);
+Route::resource('articles', ArticleController::class)->middleware('auth')->except(['home','show']);
 Route::resource('articles', ArticleController::class)->only([ 'show']);
 
 // ユーザー情報ページのルート
