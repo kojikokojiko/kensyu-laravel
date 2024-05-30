@@ -84,7 +84,7 @@ class ArticleController extends Controller
     public function edit(Article $article)
     {
         if ($article->user_id !== Auth::id()) {
-            return redirect()->route('home')->withErrors('他のユーザーの投稿は、編集、更新、削除できません');
+            return redirect()->route('home')->withErrors('他のユーザーの投稿は、編集、更新できません');
         }
 
         $tags = Tag::all();
@@ -141,9 +141,11 @@ class ArticleController extends Controller
     public function destroy(Article $article)
     {
         if ($article->user_id !== Auth::id()) {
-            return redirect()->route('home')->withErrors('他のユーザーの投稿は、編集、更新、削除できません');
+            return redirect()->route('home')->withErrors(['errors'=>'他のユーザーの投稿は削除できません']);
         }
 
+
+        dump($article);
         $article->delete();
         return redirect()->route('home')->with('success', 'Article deleted successfully.');
     }
