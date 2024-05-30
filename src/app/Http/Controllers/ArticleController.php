@@ -140,12 +140,11 @@ class ArticleController extends Controller
     // 記事の削除
     public function destroy(Article $article)
     {
+        $article = Article::findOrFail($article->id);
         if ($article->user_id !== Auth::id()) {
             return redirect()->route('home')->withErrors(['errors'=>'他のユーザーの投稿は削除できません']);
         }
 
-
-        dump($article);
         $article->delete();
         return redirect()->route('home')->with('success', 'Article deleted successfully.');
     }

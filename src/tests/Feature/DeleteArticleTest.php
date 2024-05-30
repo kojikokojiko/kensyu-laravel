@@ -13,6 +13,7 @@ use Tests\TestCase;
 
 class DeleteArticleTest extends TestCase
 {
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -31,10 +32,13 @@ class DeleteArticleTest extends TestCase
             'user_id' => $user->id,
         ]);
 
+        // 削除前に記事が存在することを確認
+        $this->assertDatabaseHas('articles', ['id' => $article->id]);
+
         $response = $this->delete("/articles/{$article->id}");
         $response->assertRedirect('/');
         $response->assertSessionHas('success', 'Article deleted successfully.');
-//        $this->assertDatabaseMissing('articles', ['id' => $article->id]);
+        $this->assertDatabaseMissing('articles', ['id' => $article->id]);
     }
 
     public function test_user_cannot_delete_others_article()
