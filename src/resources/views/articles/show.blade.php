@@ -34,6 +34,6 @@
             </div>
         @endif
 
-        <a href="{{ route('articles.index') }}" class="btn btn-primary">Back to Articles</a>
+        <a href="{{ route('home') }}" class="btn btn-primary">Back to Articles</a>
     </div>
 @endsection
