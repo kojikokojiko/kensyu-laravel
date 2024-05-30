@@ -52,20 +52,23 @@ class ArticleController extends Controller
 
 
         if ($request->hasFile('thumbnail')) {
-            $path = $request->file('thumbnail')->store('public/thumbnails');
+            $thumbnail = $request->file('thumbnail');
+            $filename = time() . '_' . $thumbnail->getClientOriginalName();
+            $path = $thumbnail->storeAs('public/thumbnails', $filename);
             $article->thumbnail()->create(['url' => str_replace('public/', '', $path)]);
         }
 
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $image) {
-                $path = $image->store('public/article_images');
+                $filename = time() . '_' . $image->getClientOriginalName();
+                $path = $image->storeAs('public/article_images', $filename);
                 $article->images()->create(['url' => str_replace('public/', '', $path)]);
             }
         }
 
         $article->tags()->sync($request->tags);
 
-        return redirect()->route('articles.index')->with('success', 'Article created successfully.');
+        return redirect()->route('home')->with('success', 'Article created successfully.');
 //        Article::create($request->all());
 //        return redirect()->route('articles.index')->with('success', 'Article created successfully.');
     }
