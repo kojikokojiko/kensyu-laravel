@@ -5,7 +5,7 @@ tree:
 
 .PHONY: up
 up:
-	docker-compose up -d
+	docker-compose up
 
 .PHONY: up-build
 up-build:
@@ -18,6 +18,12 @@ down:
 
 
 
+
+
+#
+#php artisan make:model Article -m
+#php artisan migrate
+#php artisan make:controller ArticleController
 
 
 
