@@ -8,5 +8,5 @@ use Illuminate\Support\Facades\Route;
 
 // ホームページに記事一覧を表示
 Route::get('/', IndexController::class)->name('home');
-Route::get('articles/create', GetCreatePageController::class)->name('articles.create');
-Route::post('articles', CreateArticleController::class)->name('articles.store');
+Route::get('articles/create', GetCreatePageController::class)->name('articles.get_create_page');
+Route::post('articles', CreateArticleController::class)->name('articles.create_article');
