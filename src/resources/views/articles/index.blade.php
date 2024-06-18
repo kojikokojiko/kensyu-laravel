@@ -15,7 +15,7 @@
                 <th>ID</th>
                 <th>Title</th>
                 <th>Body</th>
-                <th>Actions</th>
+{{--                <th>Actions</th>--}}
             </tr>
             </thead>
             <tbody>
@@ -24,14 +24,14 @@
                     <td>{{ $article->id }}</td>
                     <td>{{ $article->title }}</td>
                     <td>{{ $article->body }}</td>
-                    <td>
-                        <a href="{{ route('articles.edit', $article->id) }}" class="btn btn-warning">Edit</a>
-                        <form action="{{ route('articles.destroy', $article->id) }}" method="POST" style="display:inline;">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-danger">Delete</button>
-                        </form>
-                    </td>
+{{--                    <td>--}}
+{{--                        <a href="{{ route('articles.edit', $article->id) }}" class="btn btn-warning">Edit</a>--}}
+{{--                        <form action="{{ route('articles.destroy', $article->id) }}" method="POST" style="display:inline;">--}}
+{{--                            @csrf--}}
+{{--                            @method('DELETE')--}}
+{{--                            <button type="submit" class="btn btn-danger">Delete</button>--}}
+{{--                        </form>--}}
+{{--                    </td>--}}
                 </tr>
             @endforeach
             </tbody>
