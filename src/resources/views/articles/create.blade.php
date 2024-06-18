@@ -14,7 +14,7 @@
             </ul>
         </div>
     @endif
-    <form action="{{ route('articles.store') }}" method="POST">
+    <form action="{{ route('articles.create_article') }}" method="POST">
         @csrf
         <div class="form-group">
             <label for="title">Title:</label>
