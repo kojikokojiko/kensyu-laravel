@@ -13,7 +13,7 @@
                 </ul>
             </div>
         @endif
-        <form action="{{ route('articles.update_article', $article->id) }}" method="POST">
+        <form action="{{ route('articles.update_article', $article->id) }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT')
             <div class="form-group">
@@ -28,6 +28,13 @@
                 <textarea class="form-control" id="body" name="body" rows="5">{{ $article->body }}</textarea>
                 @if ($errors->has('body'))
                     <span class="text-danger">{{ $errors->first('body') }}</span>
+                @endif
+            </div>
+            <div class="form-group">
+                <label for="thumbnail">Thumbnail:</label>
+                <input type="file" class="form-control-file" id="thumbnail" name="thumbnail">
+                @if ($errors->has('thumbnail'))
+                    <span class="text-danger">{{ $errors->first('thumbnail') }}</span>
                 @endif
             </div>
             <button type="submit" class="btn btn-primary">Update</button>
