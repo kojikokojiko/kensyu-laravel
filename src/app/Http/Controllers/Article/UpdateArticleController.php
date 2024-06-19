@@ -13,7 +13,6 @@ class UpdateArticleController extends Controller
 {
     public function __invoke(UpdateArticleRequest $request, Article $article)
     {
-
         DB::beginTransaction();
         try {
             $article->update($request->only(['title', 'body']));
@@ -25,11 +24,11 @@ class UpdateArticleController extends Controller
 
             DB::commit();
 
-            return redirect()->route('home')->with('success', 'Article updated successfully.');
-
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->route('home')->with('error', 'Failed to update article: ' . $e->getMessage());
         }
+
+        return redirect()->route('home')->with('success', 'Article updated successfully.');
     }
 }
