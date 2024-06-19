@@ -11,7 +11,12 @@ class CreateArticleController extends Controller
 {
     public function __invoke(CreateArticleRequest $request)
     {
-        Article::create($request->validated());
+        $article = Article::create($request->validated());
+
+        if ($request->hasFile('thumbnail')) {
+            $path = $request->file('thumbnail')->store('public/thumbnails');
+            $article->thumbnail()->create(['path' => str_replace('public/', '', $path)]);
+        }
         return redirect()->route('home')->with('success', 'Article created successfully.');
     }
 }

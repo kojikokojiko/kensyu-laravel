@@ -15,4 +15,9 @@ class Article extends Model
      * @var array
      */
     protected $fillable = ['title', 'body'];
+
+    public function thumbnail()
+    {
+        return $this->hasOne(Thumbnail::class, 'article_id');
+    }
 }

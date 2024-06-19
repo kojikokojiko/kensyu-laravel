@@ -13,6 +13,7 @@
             <thead>
             <tr>
                 <th>ID</th>
+                <th>Thumbnail</th>
                 <th>Title</th>
                 <th>Body</th>
                 <th>Actions</th>
@@ -22,6 +23,13 @@
             @foreach ($articles as $article)
                 <tr>
                     <td>{{ $article->id }}</td>
+                    <td>
+                        @if ($article->thumbnail)
+                            <img src="{{ asset('storage/' . $article->thumbnail->path) }}" alt="Thumbnail" width="100">
+                        @else
+                            No Image
+                        @endif
+                    </td>
                     <td>{{ $article->title }}</td>
                     <td>{{ $article->body }}</td>
                     <td>
