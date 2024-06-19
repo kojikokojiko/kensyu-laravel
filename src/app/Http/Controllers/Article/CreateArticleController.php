@@ -24,10 +24,11 @@ class CreateArticleController extends Controller
 
             DB::commit();
 
-            return redirect()->route('home')->with('success', 'Article created successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->route('home')->with('error', 'Failed to create article: ' . $e->getMessage());
         }
+
+        return redirect()->route('home')->with('success', 'Article created successfully.');
     }
 }
