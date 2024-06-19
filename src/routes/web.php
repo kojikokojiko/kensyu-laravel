@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Article\DeleteArticleController;
 use App\Http\Controllers\Article\GetCreatePageController;
 use App\Http\Controllers\Article\GetEditPageController;
 use App\Http\Controllers\Article\IndexController;
@@ -14,3 +15,5 @@ Route::get('articles/create', GetCreatePageController::class)->name('articles.ge
 Route::post('articles', CreateArticleController::class)->name('articles.create_article');
 Route::get('/articles/{article}/edit', GetEditPageController::class)->name('articles.get_edit_page');
 Route::put('/articles/{article}', UpdateArticleController::class)->name('articles.update_article');
+Route::delete('/articles/{article}', DeleteArticleController::class)->name('articles.delete_article');
+
