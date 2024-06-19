@@ -13,12 +13,13 @@ class UpdateArticleController extends Controller
     public function __invoke(UpdateArticleRequest $request, Article $article)
     {
 
+        $article->update($request->only(['title', 'body']));
+
         if ($request->hasFile('thumbnail')) {
             $path = $request->file('thumbnail')->store('public/thumbnails');
-            $article->thumbnail()->update(['path' => str_replace('public/', '', $path)]);
+            $article->thumbnail()->create(['url' => str_replace('public/', '', $path)]);
         }
 
-        $article->update($request->validated());
         return redirect()->route('home')->with('success', 'Article updated successfully.');
     }
 }
