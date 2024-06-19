@@ -4,19 +4,17 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Article;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UpdateArticleRequest;
 use App\Models\Article;
-use Illuminate\Http\Request;
+
 
 class UpdateArticleController extends Controller
 {
-    public function __invoke(Request $request, Article $article)
+    public function __invoke(UpdateArticleRequest $request, Article $article)
     {
-        $request->validate([
-            'title' => 'required',
-            'body' => 'required',
-        ]);
 
-        $article->update($request->all());
+
+        $article->update($request->validated());
         return redirect()->route('home')->with('success', 'Article updated successfully.');
     }
 }
