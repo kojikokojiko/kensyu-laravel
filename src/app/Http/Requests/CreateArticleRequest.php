@@ -27,6 +27,7 @@ class CreateArticleRequest extends FormRequest
         return [
             'title' => 'required|string|max:255',
             'body' => 'required|string|max:5000',
+            'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ];
     }
 
@@ -42,6 +43,7 @@ class CreateArticleRequest extends FormRequest
             'title.max' => 'タイトルは255文字以内で入力してください。',
             'body.required' => '本文は必須です。',
             'body.max' => '本文は5000文字以内で入力してください。',
+            'thumbnail.image' => 'サムネイルは画像ファイルである必要があります。',
         ];
     }
 }
