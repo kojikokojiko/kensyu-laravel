@@ -20,4 +20,9 @@ class Article extends Model
     {
         return $this->hasOne(Thumbnail::class, 'article_id');
     }
+
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class, 'article_tag_adding');
+    }
 }
