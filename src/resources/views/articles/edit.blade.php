@@ -37,6 +37,19 @@
                     <span class="text-danger">{{ $errors->first('thumbnail') }}</span>
                 @endif
             </div>
+            <div class="form-group">
+                <label for="tags">Tags:</label>
+                @foreach ($tags as $tag)
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="tag{{ $tag->id }}" name="tags[]" value="{{ $tag->id }}"
+                               @if($article->tags->contains($tag->id)) checked @endif>
+                        <label class="form-check-label" for="tag{{ $tag->id }}">{{ $tag->name }}</label>
+                    </div>
+                @endforeach
+                @if ($errors->has('tags'))
+                    <span class="text-danger">{{ $errors->first('tags') }}</span>
+                @endif
+            </div>
             <button type="submit" class="btn btn-primary">Update</button>
         </form>
     </div>

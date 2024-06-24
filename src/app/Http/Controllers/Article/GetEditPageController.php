@@ -6,11 +6,13 @@ namespace App\Http\Controllers\Article;
 
 use App\Http\Controllers\Controller;
 use App\Models\Article;
+use App\Models\Tag;
 
 class GetEditPageController extends Controller
 {
     public function __invoke(Article $article)
     {
-        return view('articles.edit', compact('article'));
+        $tags = Tag::all();
+        return view('articles.edit', compact('article','tags'));
     }
 }
