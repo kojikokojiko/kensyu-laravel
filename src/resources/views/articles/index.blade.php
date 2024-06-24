@@ -38,6 +38,7 @@
                     <td>{{ $article->title }}</td>
                     <td>{{ $article->body }}</td>
                     <td>
+                        <a href="{{ route('articles.get_detail_page', $article->id) }}" class="btn btn-info">View</a>
                         <a href="{{ route('articles.get_edit_page', $article->id) }}" class="btn btn-warning">Edit</a>
                         <form action="{{ route('articles.delete_article', $article->id) }}" method="POST" style="display:inline;">
                             @csrf
