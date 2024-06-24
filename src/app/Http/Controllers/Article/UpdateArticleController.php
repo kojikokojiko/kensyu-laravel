@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Article;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdateArticleRequest;
 use App\Models\Article;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 
 
@@ -24,7 +25,9 @@ class UpdateArticleController extends Controller
 
             $article->tags()->sync($request->tags);
             DB::commit();
-
+        } catch (QueryException $e) {
+            DB::rollBack();
+            return redirect()->route('home')->with('error', 'Failed to update article: The tags contain invalid IDs.');
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->route('home')->with('error', 'Failed to update article: ' . $e->getMessage());
