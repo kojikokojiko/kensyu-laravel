@@ -16,7 +16,7 @@ class CreateArticleController extends Controller
 
         try {
             $article = Article::create($request->validated());
-
+            $article->tags()->sync($request->tags);
             if ($request->hasFile('thumbnail')) {
                 $path = $request->file('thumbnail')->store('public/thumbnails');
                 $article->thumbnail()->create(['path' => str_replace('public/', '', $path)]);
