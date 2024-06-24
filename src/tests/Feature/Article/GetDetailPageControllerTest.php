@@ -12,7 +12,7 @@ class GetDetailPageControllerTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_article_detail_page_displays_correctly()
+    public function test_記事詳細ページが適切に表示される()
     {
         // テストデータの作成
         $article = Article::factory()

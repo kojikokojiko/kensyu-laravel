@@ -1,7 +1,10 @@
 <?php
 
+declare (strict_types=1);
+
 namespace Database\Factories;
 
+use App\Models\Article;
 use App\Models\Thumbnail;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -12,7 +15,10 @@ class ThumbnailFactory extends Factory
     public function definition()
     {
         return [
-            'path' => 'thumbnails/' . $this->faker->uuid . '.jpg',
+            'path' => 'path/to/thumbnail.jpg',
+            'article_id' => function() {
+                return Article::factory()->create()->id;
+            },
         ];
     }
 }
