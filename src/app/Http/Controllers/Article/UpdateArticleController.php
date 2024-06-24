@@ -22,6 +22,7 @@ class UpdateArticleController extends Controller
                 $article->thumbnail()->update(['path' => str_replace('public/', '', $path)]);
             }
 
+            $article->tags()->sync($request->tags);
             DB::commit();
 
         } catch (\Exception $e) {
