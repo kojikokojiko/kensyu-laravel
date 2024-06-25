@@ -17,11 +17,19 @@ use Illuminate\Support\Facades\Route;
 
 // ホームページに記事一覧を表示
 Route::get('/', IndexController::class)->name('home');
-Route::get('articles/create', GetCreatePageController::class)->name('articles.get_create_page');
-Route::post('articles', CreateArticleController::class)->name('articles.create_article');
-Route::get('/articles/{article}/edit', GetEditPageController::class)->name('articles.get_edit_page');
-Route::put('/articles/{article}', UpdateArticleController::class)->name('articles.update_article');
-Route::delete('/articles/{article}', DeleteArticleController::class)->name('articles.delete_article');
+
+// 記事作成ページ
+Route::get('articles/create', GetCreatePageController::class)->name('articles.get_create_page')->middleware('auth');
+Route::post('articles', CreateArticleController::class)->name('articles.create_article')->middleware('auth');
+
+// 記事編集ページ
+Route::get('/articles/{article}/edit', GetEditPageController::class)->name('articles.get_edit_page')->middleware('auth');
+Route::put('/articles/{article}', UpdateArticleController::class)->name('articles.update_article')->middleware('auth');
+
+// 記事削除
+Route::delete('/articles/{article}', DeleteArticleController::class)->name('articles.delete_article')->middleware('auth');
+
+// 記事詳細ページ
 Route::get('/articles/{article}', GetDetailPageController::class)->name('articles.get_detail_page');
 
 Route::get('register', GetRegisterPageController::class)->name('register');
