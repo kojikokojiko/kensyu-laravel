@@ -38,6 +38,13 @@
             @endif
         </div>
         <div class="form-group">
+            <label for="images">Images:</label>
+            <input type="file" class="form-control-file" id="images" name="images[]" multiple>
+            @if ($errors->has('images.*'))
+                <span class="text-danger">{{ $errors->first('images.*') }}</span>
+            @endif
+        </div>
+        <div class="form-group">
             <label for="tags">Tags:</label>
             @foreach ($tags as $tag)
                 <div class="form-check">

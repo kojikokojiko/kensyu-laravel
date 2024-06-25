@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Article;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateArticleRequest;
 use App\Models\Article;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -22,8 +23,18 @@ class CreateArticleController extends Controller
                 $article->thumbnail()->create(['path' => str_replace('public/', '', $path)]);
             }
 
-            DB::commit();
+            if ($request->hasFile('images')) {
+                foreach ($request->file('images') as $image) {
+//                    $filename = time() . '_' . $image->getClientOriginalName();
+                    $path = $image->store('public/article_images');
+                    $article->images()->create(['path' => str_replace('public/', '', $path)]);
+                }
+            }
 
+            DB::commit();
+        } catch (QueryException $e) {
+            DB::rollBack();
+            return redirect()->route('home')->with('error', 'Failed to create article: The tags contain invalid IDs.');
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->route('home')->with('error', 'Failed to create article: ' . $e->getMessage());
