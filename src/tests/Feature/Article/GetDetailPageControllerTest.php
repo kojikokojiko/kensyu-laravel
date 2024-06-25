@@ -39,9 +39,9 @@ class GetDetailPageControllerTest extends TestCase
         }
 
         // 本文中の画像が表示されていることを確認
-//        foreach ($article->images as $image) {
-//            $response->assertSee(asset('storage/' . $image->path));
-//        }
+        foreach ($article->images as $image) {
+            $response->assertSee(asset('storage/' . $image->path));
+        }
 
         // タグが表示されていることを確認
         foreach ($article->tags as $tag) {
