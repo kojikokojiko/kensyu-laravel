@@ -19,34 +19,46 @@ class UpdateArticleController extends Controller
         try {
             $article->update($request->only(['title', 'body']));
 
+            // 新しいサムネイルの保存
+            $oldThumbnailPath = null;
             if ($request->hasFile('thumbnail')) {
-                // 元のサムネイルを削除
                 if ($article->thumbnail && $article->thumbnail->path) {
-                    Storage::delete('public/' . $article->thumbnail->path);
+                    $oldThumbnailPath = $article->thumbnail->path;
                 }
 
-                $path = $request->file('thumbnail')->store('public/thumbnails');
+                $thumbnailPath = $request->file('thumbnail')->store('public/thumbnails');
                 $article->thumbnail()->updateOrCreate(
                     ['article_id' => $article->id], // 更新条件
-                    ['path' => str_replace('public/', '', $path)]
+                    ['path' => str_replace('public/', '', $thumbnailPath)]
                 );
             }
 
+            // 新しい画像の保存
+            $oldImagePaths = [];
             if ($request->hasFile('images')) {
-                // 元の画像を削除
-                foreach ($article->images as $existingImage) {
-                    Storage::delete('public/' . $existingImage->path);
-                    $existingImage->delete(); // レコードも削除
-                }
+                $oldImagePaths = $article->images->pluck('path')->toArray();
+                $article->images()->delete(); // 既存の画像を削除
 
+                $newImagePaths = [];
                 foreach ($request->file('images') as $image) {
                     $path = $image->store('public/article_images');
-                    $article->images()->create(['path' => str_replace('public/', '', $path)]);
+                    $newImagePaths[] = str_replace('public/', '', $path);
                 }
+                $article->images()->createMany(array_map(fn($path) => ['path' => $path], $newImagePaths));
             }
 
             $article->tags()->sync($request->tags);
             DB::commit();
+
+            // トランザクション成功後にファイル削除
+            if ($oldThumbnailPath) {
+                Storage::delete('public/' . $oldThumbnailPath);
+            }
+
+            if (!empty($oldImagePaths)) {
+                Storage::delete(array_map(fn($path) => 'public/' . $path, $oldImagePaths));
+            }
+
         } catch (QueryException $e) {
             DB::rollBack();
             return redirect()->route('home')->with('error', 'Failed to update article: The tags contain invalid IDs.');
