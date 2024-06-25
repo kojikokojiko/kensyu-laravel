@@ -50,15 +50,6 @@ class UpdateArticleController extends Controller
             $article->tags()->sync($request->tags);
             DB::commit();
 
-            // トランザクション成功後にファイル削除
-            if ($oldThumbnailPath) {
-                Storage::delete('public/' . $oldThumbnailPath);
-            }
-
-            if (!empty($oldImagePaths)) {
-                Storage::delete(array_map(fn($path) => 'public/' . $path, $oldImagePaths));
-            }
-
         } catch (QueryException $e) {
             DB::rollBack();
             return redirect()->route('home')->with('error', 'Failed to update article: The tags contain invalid IDs.');
@@ -66,6 +57,16 @@ class UpdateArticleController extends Controller
             DB::rollBack();
             return redirect()->route('home')->with('error', 'Failed to update article: ' . $e->getMessage());
         }
+
+        // トランザクション成功後にファイル削除
+        if ($oldThumbnailPath) {
+            Storage::delete('public/' . $oldThumbnailPath);
+        }
+
+        if (!empty($oldImagePaths)) {
+            Storage::delete(array_map(fn($path) => 'public/' . $path, $oldImagePaths));
+        }
+
 
         return redirect()->route('home')->with('success', 'Article updated successfully.');
     }
