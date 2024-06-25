@@ -10,6 +10,7 @@ use App\Http\Controllers\Article\UpdateArticleController;
 use App\Http\Controllers\Auth\GetLoginPageController;
 use App\Http\Controllers\Auth\GetRegisterPageController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\LogOutController;
 use App\Http\Controllers\Auth\RegisterController;
 use Illuminate\Support\Facades\Route;
 
@@ -28,3 +29,4 @@ Route::post('register', RegisterController::class,);
 
 Route::get('login', GetLoginPageController::class)->name('login');
 Route::post('login', LoginController::class,);
+Route::post('logout', LogOutController::class,)->name('logout');

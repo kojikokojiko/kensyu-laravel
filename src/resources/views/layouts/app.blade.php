@@ -19,20 +19,20 @@
                     <a class="nav-link" href="{{ route('register') }}">Register</a>
                 </li>
             @else
-{{--                <li class="nav-item">--}}
+                <li class="nav-item">
 {{--                    <a href="{{ route('users.show', Auth::user()->id) }}">--}}
 {{--                        <span class="navbar-text mr-3">Hello, {{ Auth::user()->name }}</span>--}}
 {{--                    </a>--}}
-{{--                </li>--}}
-{{--                <li class="nav-item">--}}
-{{--                    <a class="nav-link" href="{{ route('logout') }}"--}}
-{{--                       onclick="event.preventDefault(); document.getElementById('logout-form').submit();">--}}
-{{--                        Logout--}}
-{{--                    </a>--}}
-{{--                    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">--}}
-{{--                        @csrf--}}
-{{--                    </form>--}}
-{{--                </li>--}}
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('logout') }}"
+                       onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                        Logout
+                    </a>
+                    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                        @csrf
+                    </form>
+                </li>
             @endguest
         </ul>
     </div>
