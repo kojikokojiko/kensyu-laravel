@@ -7,6 +7,8 @@ use App\Http\Controllers\Article\GetEditPageController;
 use App\Http\Controllers\Article\IndexController;
 use App\Http\Controllers\Article\CreateArticleController;
 use App\Http\Controllers\Article\UpdateArticleController;
+use App\Http\Controllers\Auth\GetRegisterPageController;
+use App\Http\Controllers\Auth\RegisterController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -19,3 +21,5 @@ Route::put('/articles/{article}', UpdateArticleController::class)->name('article
 Route::delete('/articles/{article}', DeleteArticleController::class)->name('articles.delete_article');
 Route::get('/articles/{article}', GetDetailPageController::class)->name('articles.get_detail_page');
 
+Route::get('register', GetRegisterPageController::class)->name('register');
+Route::post('register', RegisterController::class,);
