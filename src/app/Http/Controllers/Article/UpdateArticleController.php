@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateArticleRequest;
 use App\Models\Article;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 
 class UpdateArticleController extends Controller
@@ -19,8 +20,29 @@ class UpdateArticleController extends Controller
             $article->update($request->only(['title', 'body']));
 
             if ($request->hasFile('thumbnail')) {
+                // 元のサムネイルを削除
+                if ($article->thumbnail && $article->thumbnail->path) {
+                    Storage::delete('public/' . $article->thumbnail->path);
+                }
+
                 $path = $request->file('thumbnail')->store('public/thumbnails');
-                $article->thumbnail()->update(['path' => str_replace('public/', '', $path)]);
+                $article->thumbnail()->updateOrCreate(
+                    ['article_id' => $article->id], // 更新条件
+                    ['path' => str_replace('public/', '', $path)]
+                );
+            }
+
+            if ($request->hasFile('images')) {
+                // 元の画像を削除
+                foreach ($article->images as $existingImage) {
+                    Storage::delete('public/' . $existingImage->path);
+                    $existingImage->delete(); // レコードも削除
+                }
+
+                foreach ($request->file('images') as $image) {
+                    $path = $image->store('public/article_images');
+                    $article->images()->create(['path' => str_replace('public/', '', $path)]);
+                }
             }
 
             $article->tags()->sync($request->tags);

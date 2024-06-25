@@ -33,6 +33,10 @@ class UpdateArticleControllerTest extends TestCase
         $newBody = 'Updated Body';
         $newTags = Tag::factory()->count(2)->create()->pluck('id')->toArray();
         $newThumbnail = UploadedFile::fake()->image('new_thumbnail.jpg');
+        $newImages = [
+            UploadedFile::fake()->image('image1.jpg'),
+            UploadedFile::fake()->image('image2.jpg')
+        ];
 
         // リクエストの実行
         $response = $this->put(route('articles.update_article', $article), [
@@ -40,6 +44,7 @@ class UpdateArticleControllerTest extends TestCase
             'body' => $newBody,
             'tags' => $newTags,
             'thumbnail' => $newThumbnail,
+            'images' => $newImages,
         ]);
 
         // アサーション
@@ -57,6 +62,10 @@ class UpdateArticleControllerTest extends TestCase
         Storage::disk('public')->assertExists('thumbnails/' . $newThumbnail->hashName());
         $this->assertEquals('thumbnails/' . $newThumbnail->hashName(), $article->thumbnail->path);
 
+        // 画像が保存されていることを確認
+        foreach ($newImages as $image) {
+            Storage::disk('public')->assertExists('article_images/' . $image->hashName());
+        }
         // タグが更新されていることを確認
         $this->assertCount(2, $article->tags);
         $this->assertEquals($newTags, $article->tags->pluck('id')->toArray());
@@ -78,7 +87,12 @@ class UpdateArticleControllerTest extends TestCase
             'body' => 'Updated Body',
             'tags' => [9999], // 存在しないタグID
             'thumbnail' => UploadedFile::fake()->image('new_thumbnail.jpg'),
+            'images' => [
+                UploadedFile::fake()->image('new_image1.jpg'),
+                UploadedFile::fake()->image('new_image2.jpg')
+            ]
         ];
+
 
         // リクエストの実行
         $response = $this->put(route('articles.update_article', $article), $invalidData);
