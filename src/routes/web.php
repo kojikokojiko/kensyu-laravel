@@ -7,7 +7,9 @@ use App\Http\Controllers\Article\GetEditPageController;
 use App\Http\Controllers\Article\IndexController;
 use App\Http\Controllers\Article\CreateArticleController;
 use App\Http\Controllers\Article\UpdateArticleController;
+use App\Http\Controllers\Auth\GetLoginPageController;
 use App\Http\Controllers\Auth\GetRegisterPageController;
+use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use Illuminate\Support\Facades\Route;
 
@@ -23,3 +25,6 @@ Route::get('/articles/{article}', GetDetailPageController::class)->name('article
 
 Route::get('register', GetRegisterPageController::class)->name('register');
 Route::post('register', RegisterController::class,);
+
+Route::get('login', GetLoginPageController::class)->name('login');
+Route::post('login', LoginController::class,);
