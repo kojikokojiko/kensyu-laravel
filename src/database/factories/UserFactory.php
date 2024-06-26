@@ -30,6 +30,7 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
+            'profile_image' => 'public/profile_images/profile.jpg', // プロファイル画像パスの生成
         ];
     }
 
