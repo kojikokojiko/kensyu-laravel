@@ -14,7 +14,7 @@ class Article extends Model
      *
      * @var array
      */
-    protected $fillable = ['title', 'body'];
+    protected $fillable = ['title', 'body','user_id'];
 
     public function thumbnail()
     {

@@ -7,6 +7,7 @@ use App\Http\Requests\CreateArticleRequest;
 use App\Models\Article;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class CreateArticleController extends Controller
@@ -16,7 +17,11 @@ class CreateArticleController extends Controller
         DB::beginTransaction();
 
         try {
-            $article = Article::create($request->validated());
+            $article = Article::create(array_merge(
+                $request->only(['title', 'body']),
+                ['user_id' => Auth::id()]
+            ));
+
             $article->tags()->sync($request->tags);
             if ($request->hasFile('thumbnail')) {
                 $path = $request->file('thumbnail')->store('public/thumbnails');
