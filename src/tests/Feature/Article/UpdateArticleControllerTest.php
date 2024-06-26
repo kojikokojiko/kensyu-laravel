@@ -121,4 +121,41 @@ class UpdateArticleControllerTest extends TestCase
         // サムネイルが更新されていないことを確認
         Storage::disk('public')->assertMissing('thumbnails/new_thumbnail.jpg');
     }
+
+
+    public function test_未ログイン状態で記事を更新しようとするとリダイレクトされる()
+    {
+        // ストレージをモック
+        Storage::fake('testing');
+        // ユーザーと記事を作成
+        $user = User::factory()->create();
+        // ログインせずに記事を作成
+        $article = Article::factory()
+            ->for($user) // ユーザーに関連付け
+            ->has(Thumbnail::factory())
+            ->has(Tag::factory()->count(3))
+            ->create();
+
+        // 更新データの準備
+        $newTitle = 'Updated Title';
+        $newBody = 'Updated Body';
+        $newTags = Tag::factory()->count(2)->create()->pluck('id')->toArray();
+        $newThumbnail = UploadedFile::fake()->image('new_thumbnail.jpg');
+        $newImages = [
+            UploadedFile::fake()->image('image1.jpg'),
+            UploadedFile::fake()->image('image2.jpg')
+        ];
+
+        // リクエストの実行
+        $response = $this->put(route('articles.update_article', $article), [
+            'title' => $newTitle,
+            'body' => $newBody,
+            'tags' => $newTags,
+            'thumbnail' => $newThumbnail,
+            'images' => $newImages,
+        ]);
+
+        // アサーション
+        $response->assertRedirect(route('login')); // ログインページにリダイレクトされることを確認
+    }
 }
