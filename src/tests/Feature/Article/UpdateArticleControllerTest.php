@@ -8,6 +8,7 @@ namespace Feature\Article;
 use App\Models\Article;
 use App\Models\Tag;
 use App\Models\Thumbnail;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -17,13 +18,20 @@ class UpdateArticleControllerTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function login(User $user)
+    {
+        $this->actingAs($user);
+    }
     public function test_記事が正常に更新される()
     {
         // ストレージをモック
         Storage::fake('testing');
-
+        // テストデータの作成
+        $user = User::factory()->create();
+        $this->login($user);
         // テストデータの作成
         $article = Article::factory()
+            ->for($user) // ユーザーに関連付け
             ->has(Thumbnail::factory())
             ->has(Tag::factory()->count(3))
             ->create();
@@ -75,8 +83,12 @@ class UpdateArticleControllerTest extends TestCase
     {
         // ストレージをモック
         Storage::fake('testing');
+        // ユーザーと記事を作成
+        $user = User::factory()->create();
+        $this->login($user);
         // テストデータの作成
         $article = Article::factory()
+            ->for($user) // ユーザーに関連付け
             ->has(Thumbnail::factory())
             ->has(Tag::factory()->count(3))
             ->create();
