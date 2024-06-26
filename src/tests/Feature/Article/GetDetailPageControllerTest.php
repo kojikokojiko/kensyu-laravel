@@ -5,6 +5,7 @@ use App\Models\Article;
 use App\Models\Tag;
 use App\Models\Thumbnail;
 //use App\Models\Image;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -14,8 +15,11 @@ class GetDetailPageControllerTest extends TestCase
 
     public function test_記事詳細ページが適切に表示される()
     {
+        // 特定のユーザーを作成
+        $user = User::factory()->create();
         // テストデータの作成
         $article = Article::factory()
+            ->for($user) // ここで記事をユーザーに関連付ける
             ->has(Thumbnail::factory())
             ->has(Tag::factory()->count(3))
 //            ->has(Image::factory()->count(3))
@@ -32,6 +36,10 @@ class GetDetailPageControllerTest extends TestCase
         // タイトルと本文が表示されていることを確認
         $response->assertSeeText($article->title);
         $response->assertSeeText($article->body);
+
+        // 投稿者情報が表示されていることを確認
+        $response->assertSeeText($article->user->name);
+        $response->assertSee(asset('storage/' . str_replace('public/', '', $article->user->profile_image)));
 
         // サムネイル画像が表示されていることを確認
         if ($article->thumbnail) {

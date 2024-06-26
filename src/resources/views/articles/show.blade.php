@@ -5,6 +5,13 @@
         <h1>{{ $article->title }}</h1>
         <p>{{ $article->body }}</p>
 
+        <!-- 投稿者情報の表示 -->
+        <div class="mb-4">
+            <h5>Posted by: {{ $article->user->name }}</h5>
+            @if ($article->user->profile_image)
+                <img src="{{ asset('storage/' . str_replace('public/', '', $article->user->profile_image)) }}" alt="Profile Image" class="img-fluid" style="max-width: 100px; border-radius: 50%;">
+            @endif
+        </div>
         <!-- サムネイル画像の表示 -->
         @if ($article->thumbnail)
             <div class="mb-4">
