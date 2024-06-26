@@ -158,4 +158,46 @@ class UpdateArticleControllerTest extends TestCase
         // アサーション
         $response->assertRedirect(route('login')); // ログインページにリダイレクトされることを確認
     }
+
+    public function test_他のユーザーの記事を更新しようとするとエラーが発生する()
+    {
+        // ストレージをモック
+        Storage::fake('testing');
+        // ユーザーと記事を作成
+        $user = User::factory()->create();
+        $otherUser = User::factory()->create();
+        $this->login($user);
+        $article = Article::factory()->for($otherUser)->create();
+
+        // 更新データの準備
+        $newTitle = 'Updated Title';
+        $newBody = 'Updated Body';
+        $newTags = Tag::factory()->count(2)->create()->pluck('id')->toArray();
+        $newThumbnail = UploadedFile::fake()->image('new_thumbnail.jpg');
+        $newImages = [
+            UploadedFile::fake()->image('image1.jpg'),
+            UploadedFile::fake()->image('image2.jpg')
+        ];
+
+        // リクエストの実行
+        $response = $this->put(route('articles.update_article', $article), [
+            'title' => $newTitle,
+            'body' => $newBody,
+            'tags' => $newTags,
+            'thumbnail' => $newThumbnail,
+            'images' => $newImages,
+        ]);
+
+        // アサーション
+        $response->assertRedirect(route('home'));
+        $response->assertSessionHas('error' , '他のユーザーの投稿は編集できません');
+
+        // 記事が更新されていないことを確認
+        $article->refresh();
+        $this->assertNotEquals($newTitle, $article->title);
+        $this->assertNotEquals($newBody, $article->body);
+
+        // サムネイルが更新されていないことを確認
+        Storage::disk('public')->assertMissing('thumbnails/' . $newThumbnail->hashName());
+    }
 }
