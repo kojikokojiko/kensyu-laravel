@@ -8,6 +8,7 @@ namespace Feature\Article;
 use App\Models\Article;
 use App\Models\Tag;
 use App\Models\Thumbnail;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -17,13 +18,20 @@ class UpdateArticleControllerTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function login(User $user)
+    {
+        $this->actingAs($user);
+    }
     public function test_記事が正常に更新される()
     {
         // ストレージをモック
         Storage::fake('testing');
-
+        // テストデータの作成
+        $user = User::factory()->create();
+        $this->login($user);
         // テストデータの作成
         $article = Article::factory()
+            ->for($user) // ユーザーに関連付け
             ->has(Thumbnail::factory())
             ->has(Tag::factory()->count(3))
             ->create();
@@ -75,8 +83,12 @@ class UpdateArticleControllerTest extends TestCase
     {
         // ストレージをモック
         Storage::fake('testing');
+        // ユーザーと記事を作成
+        $user = User::factory()->create();
+        $this->login($user);
         // テストデータの作成
         $article = Article::factory()
+            ->for($user) // ユーザーに関連付け
             ->has(Thumbnail::factory())
             ->has(Tag::factory()->count(3))
             ->create();
@@ -108,5 +120,84 @@ class UpdateArticleControllerTest extends TestCase
 
         // サムネイルが更新されていないことを確認
         Storage::disk('public')->assertMissing('thumbnails/new_thumbnail.jpg');
+    }
+
+
+    public function test_未ログイン状態で記事を更新しようとするとリダイレクトされる()
+    {
+        // ストレージをモック
+        Storage::fake('testing');
+        // ユーザーと記事を作成
+        $user = User::factory()->create();
+        // ログインせずに記事を作成
+        $article = Article::factory()
+            ->for($user) // ユーザーに関連付け
+            ->has(Thumbnail::factory())
+            ->has(Tag::factory()->count(3))
+            ->create();
+
+        // 更新データの準備
+        $newTitle = 'Updated Title';
+        $newBody = 'Updated Body';
+        $newTags = Tag::factory()->count(2)->create()->pluck('id')->toArray();
+        $newThumbnail = UploadedFile::fake()->image('new_thumbnail.jpg');
+        $newImages = [
+            UploadedFile::fake()->image('image1.jpg'),
+            UploadedFile::fake()->image('image2.jpg')
+        ];
+
+        // リクエストの実行
+        $response = $this->put(route('articles.update_article', $article), [
+            'title' => $newTitle,
+            'body' => $newBody,
+            'tags' => $newTags,
+            'thumbnail' => $newThumbnail,
+            'images' => $newImages,
+        ]);
+
+        // アサーション
+        $response->assertRedirect(route('login')); // ログインページにリダイレクトされることを確認
+    }
+
+    public function test_他のユーザーの記事を更新しようとするとエラーが発生する()
+    {
+        // ストレージをモック
+        Storage::fake('testing');
+        // ユーザーと記事を作成
+        $user = User::factory()->create();
+        $otherUser = User::factory()->create();
+        $this->login($user);
+        $article = Article::factory()->for($otherUser)->create();
+
+        // 更新データの準備
+        $newTitle = 'Updated Title';
+        $newBody = 'Updated Body';
+        $newTags = Tag::factory()->count(2)->create()->pluck('id')->toArray();
+        $newThumbnail = UploadedFile::fake()->image('new_thumbnail.jpg');
+        $newImages = [
+            UploadedFile::fake()->image('image1.jpg'),
+            UploadedFile::fake()->image('image2.jpg')
+        ];
+
+        // リクエストの実行
+        $response = $this->put(route('articles.update_article', $article), [
+            'title' => $newTitle,
+            'body' => $newBody,
+            'tags' => $newTags,
+            'thumbnail' => $newThumbnail,
+            'images' => $newImages,
+        ]);
+
+        // アサーション
+        $response->assertRedirect(route('home'));
+        $response->assertSessionHas('error' , '他のユーザーの投稿は編集できません');
+
+        // 記事が更新されていないことを確認
+        $article->refresh();
+        $this->assertNotEquals($newTitle, $article->title);
+        $this->assertNotEquals($newBody, $article->body);
+
+        // サムネイルが更新されていないことを確認
+        Storage::disk('public')->assertMissing('thumbnails/' . $newThumbnail->hashName());
     }
 }

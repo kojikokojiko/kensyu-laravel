@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdateArticleRequest;
 use App\Models\Article;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
@@ -15,6 +16,10 @@ class UpdateArticleController extends Controller
 {
     public function __invoke(UpdateArticleRequest $request, Article $article)
     {
+        // 記事の所有者確認
+        if ($article->user_id !== Auth::id()) {
+            return redirect()->route('home')->with('error', '他のユーザーの投稿は編集できません');
+        }
         DB::beginTransaction();
         try {
             $article->update($request->only(['title', 'body']));
