@@ -21,6 +21,7 @@
                 <th>Thumbnail</th>
                 <th>Title</th>
                 <th>Body</th>
+                <th>User</th>
                 <th>Actions</th>
             </tr>
             </thead>
@@ -37,6 +38,15 @@
                     </td>
                     <td>{{ $article->title }}</td>
                     <td>{{ $article->body }}</td>
+                    <td>
+                        <a href="#">{{ $article->user->name }}</a>
+                        @if ($article->user->profile_image)
+                            <img src="{{ asset('storage/' . $article->user->profile_image) }}" alt="Profile Image" width="50" height="50" class="rounded-circle">
+                        @else
+                            <img src="{{ asset('storage/profile_images/default-profile.png') }}" alt="Default Profile Image" width="50" height="50" class="rounded-circle">
+                        @endif
+                    </td>
+
                     <td>
                         <a href="{{ route('articles.get_detail_page', $article->id) }}" class="btn btn-info">View</a>
                         <a href="{{ route('articles.get_edit_page', $article->id) }}" class="btn btn-warning">Edit</a>
